@@ -2,18 +2,18 @@
 #include"stdlib.h"
 #include"conio2.h"
 #include<malloc.h>
+#include<cstdlib>
+#include<ctime>
 #include "common_utils_and_helpers.h"
+#include "common.h"
 
-void zmien_rozmiar(int *n, pole_t ***tab, pole_t ***wzor){
-    usun_plansze(*n,*tab);
-    usun_plansze(*n,*wzor);
-    if(*n<14)(*n)+=2;
-    else (*n)=6;
-    stworz_plansze(*n,tab);
-    stworz_plansze(*n,wzor);
-    generuj_plansze(*n,*tab, *wzor);
+bool spr_indeksy(int n,int i,int j){
+    if((i>=0) && (i<n) && (j>=0) && (j<n)) return true;
+    return false;
 }
+
 void obsluga_akcji(int *n, akcje_t akcja, int cur_pos[], pole_t ***tab, pole_t ***wzor){
+    char zn=PUSTE_POLE;
     switch(akcja){
         case GORA:
             cur_pos[0]=wherex();
@@ -32,10 +32,20 @@ void obsluga_akcji(int *n, akcje_t akcja, int cur_pos[], pole_t ***tab, pole_t *
             cur_pos[1]=wherey();
             break;
         case ZERO:
-           (*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].wartosc='0';
+            zn='0';
+           if( ((*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].kolor==LIGHTGRAY)
+               && sprawdz_I_warunek(*n,*tab,cur_pos[1]-Y_PLANSZY,cur_pos[0]-X_PLANSZY, zn)
+               && sprawdz_II_warunek(*n,*tab,cur_pos[1]-Y_PLANSZY,cur_pos[0]-X_PLANSZY,zn) )
+            (*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].wartosc=zn;
+            zn=PUSTE_POLE;
             break;
         case JEDEN:
-            (*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].wartosc='1';
+            zn='1';
+            if( ((*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].kolor==LIGHTGRAY)
+               && sprawdz_I_warunek(*n,*tab,cur_pos[1]-Y_PLANSZY,cur_pos[0]-X_PLANSZY,zn)
+               &&  sprawdz_II_warunek(*n,*tab,cur_pos[1]-Y_PLANSZY,cur_pos[0]-X_PLANSZY,zn))
+            (*tab)[cur_pos[1]-Y_PLANSZY][cur_pos[0]-X_PLANSZY].wartosc=zn;
+            zn=PUSTE_POLE;
             break;
         case NOWA_GRA:
              generuj_plansze(*n,*tab, *wzor);
@@ -44,11 +54,14 @@ void obsluga_akcji(int *n, akcje_t akcja, int cur_pos[], pole_t ***tab, pole_t *
             zmien_rozmiar(n,tab,wzor);
             break;
         case ESC:
-            wypisz_koncowy_komunikat();
+            wypisz_komunikat("GAME OVER");
+            gotoxy(X_KOMUNIKATU+1,Y_KOMUNIKATU+3);
+            break;
         default:
             break;
     }
 }
+
 
 int main() {
 	int n=PODS_WYMIAR;
@@ -56,11 +69,12 @@ int main() {
 	akcje_t akcja;
 	int cur_pos[]={X_PLANSZY,Y_PLANSZY};
 	int zn;
-	bool strzalki=0;
+	bool strzalki=false;
 
 #ifndef __cplusplus
 	Conio2_Init();
 #endif
+    srand(time(NULL));
 
 	settitle("Anna Przybycien 172126");
 	stworz_plansze(n,&tab);
@@ -70,8 +84,8 @@ int main() {
 	do {
         czysc_ekran();
 		wypisz_legende(zn,strzalki);
-        rysuj_ramke(X_PLANSZY,Y_PLANSZY,n,n);
         wypisz_plansze(n,tab);
+        rysuj_ramke(X_PLANSZY,Y_PLANSZY,n,n);
         ustaw_kursor(n,cur_pos);
 		akcja=obsluga_ascii(&zn,&strzalki);
 		obsluga_akcji(&n,akcja,cur_pos,&tab,&wzor);
