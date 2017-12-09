@@ -1,11 +1,16 @@
+#ifndef __UTILS_H_INCLUDED__
+#define __UTILS_H_INCLUDED__
+
+
 #define PODS_WYMIAR 12   //podstawowy rozmiar planszy do gry
 #define X_LEGENDY 2     //poczatkowa wspolrzedna x legendy
 #define Y_LEGENDY 2     //poczatkowa wspolrzedna y legendy
-#define X_PLANSZY 55    //poczatkowa wspolrzedna x planszy
+#define X_PLANSZY 45    //poczatkowa wspolrzedna x planszy
 #define Y_PLANSZY 2     //poczatkowa wspolrzedna y planszy
 #define X_KOMUNIKATU 15 //poczatkowa wspolrzedna x komunikatu
-#define Y_KOMUNIKATU 18 //poczatkowa wspolrzedna y komunikatu
+#define Y_KOMUNIKATU 20 //poczatkowa wspolrzedna y komunikatu
 #define PUSTE_POLE '.'    //znak pustego pola
+#define ILOSC_WARUNKOW 3
 
 
 typedef enum{//wszystkie opcje
@@ -18,9 +23,9 @@ typedef enum{//wszystkie opcje
     ZERO,//duh.
     JEDEN,
     LOSOWA_PLANSZA,//o
-    PROSTA_PODPOWIEDZ,//p
+    PROSTA_PODP,//p
     ZMIANA_ROZMIARU,//r
-    SPR_CZY_KONIEC,//k
+    PROSTE_SPR,//k
     SPR_LINIE,//d
     AUTO_CZY_KONIEC,//a
     ZAZNACZ_OCZYWISTE,//j(podswietl)
@@ -36,43 +41,25 @@ typedef struct{
     int kolor;
 }pole_t;
 
+/////wypisywanie na ekran, czyszczenie ekranu, ustawianie kursora, czytanie z ekranu/////
 void czysc_ekran();
 
-void wypisz_legende(int zn, bool strzalki);
+void wypisz_legende(int zn, bool strzalki,int cur_pos[]);
 
 void wypisz_plansze(int n, pole_t **tab);
 
-void rysuj_ramke(int xp,int yp,int n,int m);
+void rysuj_ramke(int xp,int yp,int n,int m);    //rysuj ramke w okolo prostokata i poczatkowych wspol x,y, szerokosci n i wysokosci m
 
-void wypisz_komunikat(char *txt);
+void wypisz_tekst(int x, int y, char *str);
 
-int stworz_plansze(int n, pole_t ***tab);
-
-void usun_plansze(int n, pole_t **tab);
-
-void generuj_wzor(int n, pole_t **wzor);
-
-void generuj_tab(int n,pole_t **tab,pole_t **wzor);
-
-void generuj_plansze(int n,pole_t **tab,pole_t **wzor);
-
-akcje_t obsluga_ascii(int *zn,bool *strzalki);
-
+void wypisz_komunikat(char *txt);               //wypisz_tekst w ramce w X i Y_KOMUNIKATU
 
 void ustaw_kursor(int n,int cur_pos[]);
 
-int sprawdz_I_warunek(int n,pole_t **tab,int i,int j,char zn);
+akcje_t obsluga_ascii(int *zn,bool *strzalki);  //zmienia kody ascii na rodzaj akcji(np.NOWA_GRA)
 
-int sprawdz_II_warunek(int n,pole_t **tab,int i,int j,char zn);
+void wyswietl_liczbe_znakow(int n,pole_t **tab);
+/////~/////
 
-int spr_w_dol(int n, pole_t **tab,int i,int j,char zn);
 
-int spr_w_gore(int n, pole_t **tab,int i,int j,char zn);
-
-int spr_w_prawo(int n, pole_t **tab,int i, int j,char zn);
-
-int spr_w_lewo(int n, pole_t **tab,int i, int j,char zn);
-
-void zmien_rozmiar(int *n, pole_t ***tab, pole_t ***wzor);
-
-int wczytywanie_z_pliku(int n,pole_t **tab);
+#endif // __UTILS_H_INCLUDED__
